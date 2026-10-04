@@ -177,7 +177,7 @@ class DefaultExtension extends MProvider {
     const originalGetDetail = DefaultExtension.prototype.getDetail.bind(this);
     this.getDetail = async (url) => dcApplySiteOrderEpisodeNumbers(await originalGetDetail(url));
     this.signalUrl = "https://wankyo83.github.io/tokki-traffic-light/domains.json";
-    this.fallbackBaseUrl = "https://tvroom32.org";
+    this.fallbackBaseUrl = "https://tvroom36.org";
     this.assetBaseUrl = "https://dc-toki-mangayomi-media.pages.dev";
     this.userAgent = "Mozilla/5.0 (Linux; Android 13; Pixel 7 Build/TQ3A.230805.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/143.0.0.0 Mobile Safari/537.36";
     this.popularRulePreference = "tvroom_popular_rule_v1";
