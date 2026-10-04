@@ -180,11 +180,11 @@ class DefaultExtension extends MProvider {
     this.fallbackBaseUrl = "https://tvroom36.org";
     this.assetBaseUrl = "https://dc-toki-mangayomi-media.pages.dev";
     this.userAgent = "Mozilla/5.0 (Linux; Android 13; Pixel 7 Build/TQ3A.230805.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/143.0.0.0 Mobile Safari/537.36";
-    this.popularRulePreference = "tvroom_popular_rule_v1";
-    this.latestRulePreference = "tvroom_latest_rule_v1";
-    this.titleLanguagePreference = "tvroom_anime_title_language_v2";
-    this.titleCachePrefix = "tvroom_anime_title_meta_v3_";
-    this.animePathCachePrefix = "tvroom_anime_path_v1_";
+    this.popularRulePreference = "tvroom_peronsal_popular_rule_v1";
+    this.latestRulePreference = "tvroom_peronsal_latest_rule_v1";
+    this.titleLanguagePreference = "tvroom_peronsal_anime_title_language_v2";
+    this.titleCachePrefix = "tvroom_peronsal_anime_title_meta_v3_";
+    this.animePathCachePrefix = "tvroom_peronsal_anime_path_v1_";
     this.categories = [
       { key: "movie", name: "영화", path: "영화", search: "영화", section: "최신영화", image: "movie.jpg" },
       { key: "drama", name: "드라마", path: "드라마", search: "드라마", section: "최신드라마", image: "drama.jpg" },
@@ -245,7 +245,7 @@ class DefaultExtension extends MProvider {
   }
   _isAllowedBaseUrl(v) { return /^https:\/\/(?:www\.)?tvroom\d+\.org\/?$/i.test(this._text(v).trim()); }
   async _resolveBaseUrl() {
-    const manual = this._text(this._preference("tvroom_domain_url", "")).trim();
+    const manual = this._text(this._preference("tvroom_personal_domain_url", "")).trim();
     if (this._isAllowedBaseUrl(manual)) return this._trimSlash(manual);
     try {
       const r = await new Client({ persistentConnection: false, noProxy: true, timeout: 8, connectTimeout: 5 }).get(this.signalUrl, { "User-Agent": this.userAgent, "Accept": "application/json", "Cache-Control": "no-cache" });
@@ -311,7 +311,7 @@ class DefaultExtension extends MProvider {
   _weekdayName(slug) { return ({ monday: "월요일", tuesday: "화요일", wednesday: "수요일", thursday: "목요일", friday: "금요일", saturday: "토요일", sunday: "일요일" })[slug] || "오늘"; }
   _driveDirect(url, image) { const s = this._text(url).trim(); const m = s.match(/drive\.google\.com\/file\/d\/([^/]+)/i); return m ? "https://drive.google.com/uc?export=" + (image ? "view" : "download") + "&id=" + m[1] : s; }
   async _customCardUrl(slug) {
-    const source = this._text(this._preference("tvroom_custom_card_json_url", "")).trim();
+    const source = this._text(this._preference("tvroom_personal_custom_card_json_url", "")).trim();
     if (!source) return "";
     const preferences = new SharedPreferences(), cacheKey = "tvroom_custom_card_cache", sourceKey = cacheKey + "_source", timeKey = cacheKey + "_time";
     let data = null, cached = "";
@@ -329,7 +329,7 @@ class DefaultExtension extends MProvider {
   }
   async _tabCard(slug, tab) {
     const day = slug || this._koreaWeekday();
-    const customSource = this._text(this._preference("tvroom_custom_card_json_url", "")).trim();
+    const customSource = this._text(this._preference("tvroom_personal_custom_card_json_url", "")).trim();
     const customImage = await this._customCardUrl(day);
     const event = customSource ? null : await dcOfficialEventCard();
     const official = customImage || event ? null : await dcOfficialListCardSystem("tvroom", tab, "오늘의 미디어");
@@ -567,6 +567,6 @@ class DefaultExtension extends MProvider {
     return [separator("top"), header("usage", "필터 탭에서 콘텐츠 종류를 먼저 선택하세요. 국가와 정렬은 생략하면 전체·시간순으로 처리합니다."), this._select("contentType", "콘텐츠 종류", choices(this.contentOptions)), this._select("country", "국가", choices(this.countryOptions)), this._select("order", "정렬", choices(this.orderOptions)), separator("save"), header("defaultHelp", "기본 인기: 메인 추천 · 기본 최신: 카테고리별 최신 12개"), header("cardHelp", "목록 카드는 Popular/Latest 1번에만 표시되며 필터 결과와 통합 검색에서는 숨깁니다."), header("popularSummary", "현재 Popular: " + this._ruleSummary(popular)), header("latestSummary", "현재 Latest: " + this._ruleSummary(latest)), this._select("tabRuleAction", "Popular/Latest 규칙", [option("저장하지 않음 (필터 결과만 보기)", "0"), option("현재 조건을 Popular 탭에 저장", "1"), option("현재 조건을 Latest 탭에 저장", "2"), option("Popular 탭을 기본값으로 복원", "3"), option("Latest 탭을 기본값으로 복원", "4"), option("두 탭 모두 기본값으로 복원", "5")])];
   }
   getSourcePreferences() {
-    return [{ key: "tvroom_anime_title_language_v2", listPreference: { title: "애니 작품 제목 언어", summary: "애니 작품은 한국어와 일본어 중에서 선택합니다. 변경 후 현재 화면을 새로고침하세요. 영화·드라마·예능·시사 등은 한국어 제목을 유지합니다.", valueIndex: 0, entries: ["한국어", "일본어"], entryValues: ["ko", "ja"] } }, { key: "tvroom_domain_url", editTextPreference: { title: "티비룸 주소 직접 지정 (선택)", summary: "빈 값이면 토끼 중앙신호등이 공식 텔레그램에서 가져온 최신 주소를 사용합니다.", value: "", dialogTitle: "https://tvroom32.org", dialogMessage: "자동 주소를 사용하려면 빈 값으로 두세요." } }, { key: "tvroom_custom_card_json_url", editTextPreference: { title: "커스텀 목록 카드 (선택)", summary: "공개 JSON 주소 1개로 요일별 카드 7장을 설정합니다. 360×540 GIF를 권장하며 용량·프레임 제한은 없습니다.", value: "", dialogTitle: "커스텀 목록 카드 JSON 주소", dialogMessage: "Google Drive 공개 공유 링크 또는 직접 JSON 주소를 넣으세요. 개인 카드를 설정하면 공용 이벤트 카드는 표시되지 않습니다. 빈 값이면 공용 이벤트 또는 기본 미디어 요일 카드를 사용합니다." } }];
+    return [{ key: "tvroom_anime_title_language_v2", listPreference: { title: "애니 작품 제목 언어", summary: "애니 작품은 한국어와 일본어 중에서 선택합니다. 변경 후 현재 화면을 새로고침하세요. 영화·드라마·예능·시사 등은 한국어 제목을 유지합니다.", valueIndex: 0, entries: ["한국어", "일본어"], entryValues: ["ko", "ja"] } }, { key: "tvroom_domain_url", editTextPreference: { title: "티비룸 주소 직접 지정 (선택)", summary: "빈 값이면 토끼 중앙신호등이 공식 텔레그램에서 가져온 최신 주소를 사용합니다.", value: "", dialogTitle: "https://tvroom36.org", dialogMessage: "자동 주소를 사용하려면 빈 값으로 두세요." } }, { key: "tvroom_custom_card_json_url", editTextPreference: { title: "커스텀 목록 카드 (선택)", summary: "공개 JSON 주소 1개로 요일별 카드 7장을 설정합니다. 360×540 GIF를 권장하며 용량·프레임 제한은 없습니다.", value: "", dialogTitle: "커스텀 목록 카드 JSON 주소", dialogMessage: "Google Drive 공개 공유 링크 또는 직접 JSON 주소를 넣으세요. 개인 카드를 설정하면 공용 이벤트 카드는 표시되지 않습니다. 빈 값이면 공용 이벤트 또는 기본 미디어 요일 카드를 사용합니다." } }];
   }
 }
