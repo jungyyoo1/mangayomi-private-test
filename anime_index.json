@@ -1,1 +1,23 @@
-
+[
+  {
+    "name": "티비룸 개인테스트",
+    "baseUrl": "https://tvroom36.org",
+    "lang": "ko",
+    "typeSource": "single",
+    "iconUrl": "https://dc-toki-mangayomi-media.pages.dev/icon/ko.media.png",
+    "dateFormat": "",
+    "dateFormatLocale": "",
+    "isNsfw": false,
+    "hasCloudflare": false,
+    "sourceCodeUrl": "https://raw.githubusercontent.com/jungyyoo1/mangayomi-private-test/main/javascript/anime/src/ko/tvroom_personal.js",
+    "apiUrl": "",
+    "version": "0.1.0",
+    "isManga": false,
+    "itemType": 1,
+    "isFullData": false,
+    "appMinVerReq": "0.9.3",
+    "additionalParams": "",
+    "sourceCodeLanguage": 1,
+    "notes": "개인 테스트용 티비룸 익스텐션"
+  }
+]
