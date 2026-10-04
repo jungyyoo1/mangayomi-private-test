@@ -540,16 +540,25 @@ class DefaultExtension extends MProvider {
       if (url.length > 1800) throw new Error("HLS 재생목록 주소가 너무 깁니다.");
       return url;
     }
-  async getVideoList(url) {
-    const base = await this._resolveBaseUrl(), episodeUrl = base + this._relativePath(url), episodeDocument = new Document(await this._requestText(episodeUrl, base + "/", "회차")), frame = episodeDocument.selectFirst("iframe#view_iframe[src]");
-    if (!frame) throw new Error("사이트의 재생 프레임을 찾지 못했습니다.");
-    const playerUrl = this._absoluteUrl(episodeUrl, frame.attr("src")); if (!/^https:\/\//i.test(playerUrl)) throw new Error("사이트의 재생 주소가 올바르지 않습니다.");
-    const playerOrigin = this._origin(playerUrl), playerHtml = await this._requestText(playerUrl, episodeUrl, "플레이어", { "Origin": base });
-    const playerDocument = new Document(playerHtml), player = playerDocument.selectFirst("#player[data-m3u8]"); let streamUrl = player ? this._text(player.attr("data-m3u8")).replace(/&amp;/g, "&") : "";
-    if (!streamUrl) { const match = playerHtml.match(/https?:\/\/[^"'\s<>]+\.m3u8(?:\?[^"'\s<>]*)?/i); streamUrl = match ? match[0].replace(/&amp;/g, "&") : ""; }
-    if (!streamUrl) throw new Error("사이트가 HLS 주소를 제공하지 않았습니다.");
-    const streamHeaders = { "Accept": "*/*", "Referer": playerUrl, "Origin": playerOrigin, "User-Agent": this.userAgent };
-    const playlist = await this._requestText(streamUrl, playerUrl, "재생목록", streamHeaders);
+ async getVideoList(url) {
+  const testUrl =
+    "https://tvroom-hls-test.jungyyoo1.workers.dev/proxy" +
+    "?url=" +
+    encodeURIComponent(
+      "http://devimages.apple.com/iphone/samples/bipbop/bipbopall.m3u8"
+    );
+
+  return [
+    {
+      url: testUrl,
+      originalUrl: testUrl,
+      quality: "Worker HLS Test",
+      headers: {},
+      subtitles: [],
+      audios: []
+    }
+  ];
+}
 
     // TEMP DIAGNOSTIC: verify bridge parameter integrity without printing secrets.
     const keyMatchForDiag = playlist.match(/#EXT-X-KEY:[^\r\n]*URI="([^"]+)"/i);
